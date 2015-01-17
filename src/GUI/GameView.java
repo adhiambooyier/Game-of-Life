@@ -2,7 +2,6 @@ package GUI;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.geom.Ellipse2D;
 
 /**
  * Created by user-VII on 1/17/15.
@@ -15,9 +14,13 @@ import java.awt.geom.Ellipse2D;
  */
 public class GameView {
     private JFrame frame;
+    private GameBoard gameBoard;
 
-    public GameView() {
+
+    public GameView(GameBoard gameBoard) {
         frame = new JFrame();
+        this.gameBoard = gameBoard;
+
         try {
             System.setProperty("apple.laf.useScreenMenuBar", "true");
             System.setProperty("com.apple.mrj.application.apple.menu.about.name", "Game-of-Life");
@@ -30,7 +33,7 @@ public class GameView {
         frame.setLayout(new BorderLayout());
         frame.setJMenuBar(GameMenuBar());
         frame.add(GamePanel(), BorderLayout.WEST);
-        frame.add(new GameBoard(), BorderLayout.CENTER);
+        frame.add(gameBoard, BorderLayout.CENTER);
         frame.pack();
         frame.setLocationRelativeTo(null);
         frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
@@ -74,21 +77,7 @@ public class GameView {
         return content;
     }
 
-    private class GameBoard extends JPanel {
-
-        @Override
-        public void paint(Graphics g) {
-            Graphics2D g2d = (Graphics2D) g;
-            g2d.setColor(Color.RED);
-            g2d.fillOval(0, 0, 30, 30);
-            g2d.drawOval(0, 50, 30, 30);
-            g2d.fillRect(50, 0, 30, 30);
-            g2d.drawRect(50, 50, 30, 30);
-
-            g2d.draw(new Ellipse2D.Double(0, 100, 30, 30));
-        }
-
+    public void createCircle() {
+        gameBoard.createCircle();
     }
-
-
 }
