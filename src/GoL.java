@@ -7,12 +7,11 @@ import java.util.Scanner;
  * and operates on all the classes.
  *
  * Author: Gil Dekel
- * Last Modified: 1.16.2015
+ * Last Edit: MW
+ * Last Modified: 1.17.2015
  */
 public class GoL {
-
-    public static void main(String[] args) {
-
+    public GoL() {
         Scanner in = new Scanner(System.in);
         Field stage = new Field();
         int generationCounter = 0;
@@ -34,5 +33,9 @@ public class GoL {
             System.out.print("Next Generation? (y/n): ");
             yesOrNo = in.nextLine().toLowerCase().charAt(0);
         }
+    }
+
+    public static void main(String[] args) {
+        GoL init = new GoL();
     }
 }
