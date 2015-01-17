@@ -1,3 +1,5 @@
+import GUI.GameController;
+
 import java.util.Scanner;
 
 /**
@@ -11,7 +13,12 @@ import java.util.Scanner;
  * Last Modified: 1.17.2015
  */
 public class GoL {
+
     public GoL() {
+
+    }
+
+    public void ConsoleCreationism() {
         Scanner in = new Scanner(System.in);
         Field stage = new Field();
         int generationCounter = 0;
@@ -35,7 +42,13 @@ public class GoL {
         }
     }
 
+    public void GUICreationism() {
+        GameController controller = new GameController();
+    }
+
     public static void main(String[] args) {
         GoL init = new GoL();
+        init.GUICreationism();
+        //init.ConsoleCreationism();
     }
 }
