@@ -2,12 +2,13 @@ package GUI;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.geom.Ellipse2D;
 
 /**
  * Created by user-VII on 1/17/15.
- * <p/>
+ *
  * This is the main GUI for the program.
- * <p/>
+ *
  * Author: MW
  * Last Edit: MW
  * Last Modified: 1/17/15
@@ -28,7 +29,8 @@ public class GameView {
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         frame.setLayout(new BorderLayout());
         frame.setJMenuBar(GameMenuBar());
-        frame.add(GamePanel());
+        frame.add(GamePanel(), BorderLayout.WEST);
+        frame.add(new GameBoard(), BorderLayout.CENTER);
         frame.pack();
         frame.setLocationRelativeTo(null);
         frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
@@ -62,9 +64,31 @@ public class GameView {
     private JPanel GamePanel() {
         JPanel content = new JPanel();
 
-        content.setLayout(new FlowLayout());
-        content.add(new JLabel("Stuff!"));
-        content.add(new JLabel("and a game!"));
+
+        content.setLayout(new BoxLayout(content, BoxLayout.Y_AXIS));
+        content.setBorder(BorderFactory.createMatteBorder(
+                0, 0, 0, 1, Color.BLACK));
+        content.add(new JButton("Play"));
+        content.add(new JButton("Pause"));
+
         return content;
     }
+
+    private class GameBoard extends JPanel {
+
+        @Override
+        public void paint(Graphics g) {
+            Graphics2D g2d = (Graphics2D) g;
+            g2d.setColor(Color.RED);
+            g2d.fillOval(0, 0, 30, 30);
+            g2d.drawOval(0, 50, 30, 30);
+            g2d.fillRect(50, 0, 30, 30);
+            g2d.drawRect(50, 50, 30, 30);
+
+            g2d.draw(new Ellipse2D.Double(0, 100, 30, 30));
+        }
+
+    }
+
+
 }
