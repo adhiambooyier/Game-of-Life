@@ -1,7 +1,5 @@
 package GUI;
 
-import javax.swing.*;
-
 /**
  * Created by user-VII on 1/17/15.
  * Description:
@@ -11,14 +9,19 @@ import javax.swing.*;
 public class GameController {
     private GameView view;
     private GameModel model;
+    private GameBoard gameBoard;
 
     public GameController() {
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                view = new GameView();
-                view.setVisible(true);
-            }
-        });
+        gameBoard = new GameBoard();
+        view = new GameView(gameBoard);
+        view.setVisible(true);
+
         model = new GameModel();
+
+        createThings();
+    }
+
+    private void createThings() {
+        view.createCircle();
     }
 }

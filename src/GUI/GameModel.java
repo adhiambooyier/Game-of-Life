@@ -9,4 +9,6 @@ package GUI;
 public class GameModel {
     private long gameTimer;
     private long score;
+    private int gridLength;
+    private int gridWidth;
 }

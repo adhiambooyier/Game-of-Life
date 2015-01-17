@@ -5,18 +5,22 @@ import java.awt.*;
 
 /**
  * Created by user-VII on 1/17/15.
- * <p/>
+ *
  * This is the main GUI for the program.
- * <p/>
+ *
  * Author: MW
  * Last Edit: MW
  * Last Modified: 1/17/15
  */
 public class GameView {
     private JFrame frame;
+    private GameBoard gameBoard;
 
-    public GameView() {
+
+    public GameView(GameBoard gameBoard) {
         frame = new JFrame();
+        this.gameBoard = gameBoard;
+
         try {
             System.setProperty("apple.laf.useScreenMenuBar", "true");
             System.setProperty("com.apple.mrj.application.apple.menu.about.name", "Game-of-Life");
@@ -28,7 +32,8 @@ public class GameView {
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         frame.setLayout(new BorderLayout());
         frame.setJMenuBar(GameMenuBar());
-        frame.add(GamePanel());
+        frame.add(GamePanel(), BorderLayout.WEST);
+        frame.add(gameBoard, BorderLayout.CENTER);
         frame.pack();
         frame.setLocationRelativeTo(null);
         frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
@@ -62,9 +67,17 @@ public class GameView {
     private JPanel GamePanel() {
         JPanel content = new JPanel();
 
-        content.setLayout(new FlowLayout());
-        content.add(new JLabel("Stuff!"));
-        content.add(new JLabel("and a game!"));
+
+        content.setLayout(new BoxLayout(content, BoxLayout.Y_AXIS));
+        content.setBorder(BorderFactory.createMatteBorder(
+                0, 0, 0, 1, Color.BLACK));
+        content.add(new JButton("Play"));
+        content.add(new JButton("Pause"));
+
         return content;
+    }
+
+    public void createCircle() {
+        gameBoard.createCircle();
     }
 }

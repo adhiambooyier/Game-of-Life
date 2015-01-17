@@ -1,5 +1,6 @@
 import GUI.GameController;
 
+import javax.swing.*;
 import java.util.Scanner;
 
 /**
@@ -43,7 +44,12 @@ public class GoL {
     }
 
     public void GUICreationism() {
-        GameController controller = new GameController();
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                GameController controller = new GameController();
+            }
+        });
+
     }
 
     public static void main(String[] args) {

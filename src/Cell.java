@@ -13,12 +13,21 @@
 
 public class Cell {
     private boolean living;
+    private int xCoord;
+    private int yCoord;
+    private String size;
 
     /**
      * All instances of Cell are stillborn.
      */
     public Cell() {
         living = false;
+    }
+
+    public Cell(int x, int y, String size) {
+        xCoord = x;
+        yCoord = y;
+        this.size = size;
     }
 
     public boolean isAlive() {
