@@ -20,8 +20,8 @@ public class Field {
     private ArrayList<ArrayList<Cell>> grid;
 
     public Field() {
-        fieldHeight = 10;
-        fieldWidth = 10;
+        fieldHeight = 30;
+        fieldWidth = 100;
 
         grid = new ArrayList<ArrayList<Cell>>(fieldHeight);
         for(int h = 0; h < fieldHeight; h++) {
@@ -51,7 +51,7 @@ public class Field {
      * state of generation 0.
      */
     public void setInitialGeneration() {
-        int numOfAttempts = rnd.nextInt((fieldHeight*fieldWidth));
+        int numOfAttempts = rnd.nextInt((fieldHeight*fieldWidth)/2);
         for(int i = 0; i < numOfAttempts; i++) {
             if(rnd.nextBoolean()) {
                 Cell currentCell = grid.get(rnd.nextInt(fieldHeight)).get(rnd.nextInt(fieldWidth));
@@ -62,13 +62,18 @@ public class Field {
         }
     }
 
+    /**
+     * This can serve as a general draw command to any
+     * graphical interface. Simply replace the
+     * System.out part.
+     */
     public void drawMap() {
         for(int h = 0; h < grid.size(); h++) {
             for (int w = 0; w < grid.get(h).size(); w++) {
                 if (grid.get(h).get(w).isAlive()) {
-                    System.out.print("\u25A0");
+                    System.out.print("O");
                 } else {
-                    System.out.print("\u25A1");
+                    System.out.print("_");
                 }
             }
             System.out.println();
@@ -85,16 +90,15 @@ public class Field {
     public void nextGeneration() {
         for (int h = 0; h < grid.size(); h++) {
             for (int w = 0; w < grid.get(h).size(); w++) {
-
-                int numOfNeighbors = countNeighbors(h, w);
                 Cell currentCell = grid.get(h).get(w);
 
                 if (currentCell.isAlive()) {
-                    if (numOfNeighbors < 2 || numOfNeighbors > 3) {
+                    if (currentCell.getNumOfNeighbors() < 2 ||
+                            currentCell.getNumOfNeighbors() > 3) {
                         currentCell.kill();
                     }
                 } else {
-                    if (numOfNeighbors == 3) {
+                    if (currentCell.getNumOfNeighbors() == 3) {
                         currentCell.revive();
                     }
                 }
@@ -103,10 +107,23 @@ public class Field {
     }
 
     /**
+     * In order to follow the four rules of the Game of Life,
+     * all cells must be aware of their neighbors before any
+     * work is done on the map.
+     */
+    public void updateAllCells() {
+        for (int h = 0; h < grid.size(); h++) {
+            for (int w = 0; w < grid.get(h).size(); w++) {
+                Cell currentCell = grid.get(h).get(w);
+                currentCell.setNumOfNeighbors(countNeighbors(h, w));
+            }
+        }
+    }
+
+    /**
      * Populates the grid with dead cells.
      */
     private void populateGrid() {
-        System.out.println("populateGrid()");
         for (int h = 0; h < grid.size(); h++) {
             for (int w = 0; w < fieldWidth; w++) {
                 grid.get(h).add(w, new Cell());
@@ -125,7 +142,9 @@ public class Field {
 
         for(int i = -1; i < 2; i ++) {
             for(int j = -1; j < 2; j++) {
-                if(i != 0 && j != 0) {
+                if(i == 0 && j == 0) {
+                    //do nothing.
+                } else {
                     if ((height+i >= 0 && height + i < fieldHeight) &&
                             (width + j >= 0 && width + j < fieldWidth)) {
                         if (grid.get(height + i).get(width + j).isAlive()) {

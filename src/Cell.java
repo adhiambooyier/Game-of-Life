@@ -15,6 +15,7 @@ public class Cell {
     private boolean living;
     private int xCoord;
     private int yCoord;
+    private int numOfNeighbors;
     private String size;
 
     /**
@@ -22,11 +23,14 @@ public class Cell {
      */
     public Cell() {
         living = false;
+        numOfNeighbors = 0;
     }
 
     public Cell(int x, int y, String size) {
         xCoord = x;
         yCoord = y;
+        living = false;
+        numOfNeighbors = 0;
         this.size = size;
     }
 
@@ -38,7 +42,9 @@ public class Cell {
         living = false;
     }
 
-    public void revive() {
-        living = true;
-    }
+    public void revive() { living = true; }
+
+    public void setNumOfNeighbors(int num) { numOfNeighbors = num; }
+
+    public int getNumOfNeighbors() { return numOfNeighbors; }
 }

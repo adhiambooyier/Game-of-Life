@@ -34,12 +34,23 @@ public class GoL {
 
         while (yesOrNo == 'y') {
             generationCounter++;
+            stage.updateAllCells();
             stage.nextGeneration();
             stage.drawMap();
             System.out.println("Generation: " + generationCounter);
 
             System.out.print("Next Generation? (y/n): ");
+
+            /**
+             * Comment the following line and uncomment the
+             * five after it to create a delayed loop.
+             */
             yesOrNo = in.nextLine().toLowerCase().charAt(0);
+//            yesOrNo = 'y';
+//            try {
+//                Thread.sleep(200);
+//            }
+//            catch (Exception e) {}
         }
     }
 
