@@ -1,3 +1,5 @@
+package Model;
+
 import java.util.Random;
 import java.util.ArrayList;
 
@@ -16,12 +18,14 @@ public class Field {
 
     private int fieldHeight;
     private int fieldWidth;
+    private int generationNum;
     private Random rnd = new Random();
     private ArrayList<ArrayList<Cell>> grid;
 
     public Field() {
-        fieldHeight = 30;
         fieldWidth = 100;
+        fieldHeight = (fieldWidth/16)*9;
+        generationNum = 0;
 
         grid = new ArrayList<ArrayList<Cell>>(fieldHeight);
         for(int h = 0; h < fieldHeight; h++) {
@@ -34,6 +38,7 @@ public class Field {
     public Field(int inputHeight, int inputWidth) {
         fieldHeight = inputHeight;
         fieldWidth = inputWidth;
+        generationNum = 0;
 
         grid = new ArrayList<ArrayList<Cell>>(fieldHeight);
         for(int h = 0; h < fieldHeight; h++) {
@@ -51,32 +56,15 @@ public class Field {
      * state of generation 0.
      */
     public void setInitialGeneration() {
+        clearGrid();
         int numOfAttempts = rnd.nextInt((fieldHeight*fieldWidth)/2);
         for(int i = 0; i < numOfAttempts; i++) {
             if(rnd.nextBoolean()) {
-                Cell currentCell = grid.get(rnd.nextInt(fieldHeight)).get(rnd.nextInt(fieldWidth));
+                Cell currentCell = getCellAt(rnd.nextInt(fieldHeight), rnd.nextInt(fieldWidth));
                 if(!currentCell.isAlive()) {
                     currentCell.revive();
                 }
             }
-        }
-    }
-
-    /**
-     * This can serve as a general draw command to any
-     * graphical interface. Simply replace the
-     * System.out part.
-     */
-    public void drawMap() {
-        for(int h = 0; h < grid.size(); h++) {
-            for (int w = 0; w < grid.get(h).size(); w++) {
-                if (grid.get(h).get(w).isAlive()) {
-                    System.out.print("O");
-                } else {
-                    System.out.print("_");
-                }
-            }
-            System.out.println();
         }
     }
 
@@ -88,9 +76,11 @@ public class Field {
      * Any dead cell with exactly three live neighbours becomes a live cell.
      */
     public void nextGeneration() {
+        generationNum++;
+
         for (int h = 0; h < grid.size(); h++) {
             for (int w = 0; w < grid.get(h).size(); w++) {
-                Cell currentCell = grid.get(h).get(w);
+                Cell currentCell = getCellAt(h, w);
 
                 if (currentCell.isAlive()) {
                     if (currentCell.getNumOfNeighbors() < 2 ||
@@ -114,11 +104,31 @@ public class Field {
     public void updateAllCells() {
         for (int h = 0; h < grid.size(); h++) {
             for (int w = 0; w < grid.get(h).size(); w++) {
-                Cell currentCell = grid.get(h).get(w);
-                currentCell.setNumOfNeighbors(countNeighbors(h, w));
+                getCellAt(h, w).setNumOfNeighbors(countNeighbors(h, w));
             }
         }
     }
+
+    public int getHeight() { return fieldHeight; }
+
+    public int getWidth() { return fieldWidth; }
+
+    public void clearGrid() {
+        generationNum = 0;
+        for (int h = 0; h < grid.size(); h++) {
+            for (int w = 0; w < fieldWidth; w++) {
+                getCellAt(h, w).kill();
+            }
+        }
+    }
+
+    public Cell getCellAt(int h, int w) {
+        return grid.get(h).get(w);
+    }
+
+    public boolean getCellStateAt(int h, int w) { return getCellAt(h, w).isAlive(); }
+
+    public int getGenerationNum() { return generationNum; }
 
     /**
      * Populates the grid with dead cells.
@@ -147,7 +157,7 @@ public class Field {
                 } else {
                     if ((height+i >= 0 && height + i < fieldHeight) &&
                             (width + j >= 0 && width + j < fieldWidth)) {
-                        if (grid.get(height + i).get(width + j).isAlive()) {
+                        if (getCellAt(height + i, width + j).isAlive()) {
                             neighborCount++;
                             if (neighborCount > 3) {
                                 return neighborCount;
@@ -161,6 +171,3 @@ public class Field {
     }
 
 }
-
-
-

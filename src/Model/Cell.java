@@ -1,3 +1,4 @@
+package Model;
 
 /**
  * Created by Gil Dekel on 1/16/15.
@@ -19,7 +20,7 @@ public class Cell {
     private String size;
 
     /**
-     * All instances of Cell are stillborn.
+     * All instances of Model.Cell are stillborn.
      */
     public Cell() {
         living = false;
