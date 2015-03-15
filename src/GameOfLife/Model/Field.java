@@ -1,4 +1,4 @@
-package Model;
+package GameOfLife.Model;
 
 import java.util.Random;
 import java.util.ArrayList;
@@ -11,7 +11,7 @@ import java.util.ArrayList;
  * variable members, and will define all work functions.
  *
  * Author: Gil Dekel
- * Last Modified: 1/16/2015
+ * Last Modified: 3/15/2015
  */
 
 public class Field {
@@ -20,19 +20,21 @@ public class Field {
     private int fieldWidth;
     private int generationNum;
     private Random rnd = new Random();
-    private ArrayList<ArrayList<Cell>> grid;
+    private ArrayList<ArrayList<Cell>> currentStep, nextStep;
 
     public Field() {
         fieldWidth = 100;
         fieldHeight = (fieldWidth/16)*9;
         generationNum = 0;
 
-        grid = new ArrayList<ArrayList<Cell>>(fieldHeight);
+        currentStep = new ArrayList<ArrayList<Cell>>(fieldHeight);
+
         for(int h = 0; h < fieldHeight; h++) {
-            grid.add(h, new ArrayList<Cell>(fieldWidth));
+            currentStep.add(h, new ArrayList<Cell>(fieldWidth));
         }
 
         populateGrid();
+//        nextStep = new ArrayList<ArrayList<Cell>>(currentStep);
     }
 
     public Field(int inputHeight, int inputWidth) {
@@ -40,12 +42,14 @@ public class Field {
         fieldWidth = inputWidth;
         generationNum = 0;
 
-        grid = new ArrayList<ArrayList<Cell>>(fieldHeight);
+        currentStep = new ArrayList<ArrayList<Cell>>(fieldHeight);
+
         for(int h = 0; h < fieldHeight; h++) {
-            grid.add(h, new ArrayList<Cell>(fieldWidth));
+            currentStep.add(h, new ArrayList<Cell>(fieldWidth));
         }
 
         populateGrid();
+//        nextStep = new ArrayList<ArrayList<Cell>>(currentStep);
     }
 
     /**
@@ -57,6 +61,7 @@ public class Field {
      */
     public void setInitialGeneration() {
         clearGrid();
+
         int numOfAttempts = rnd.nextInt((fieldHeight*fieldWidth)/2);
         for(int i = 0; i < numOfAttempts; i++) {
             if(rnd.nextBoolean()) {
@@ -66,6 +71,7 @@ public class Field {
                 }
             }
         }
+
     }
 
     /**
@@ -74,27 +80,24 @@ public class Field {
      * Any live cell with more than three live neighbours dies, as if by overcrowding.
      * Any live cell with two or three live neighbours lives on to the next generation.
      * Any dead cell with exactly three live neighbours becomes a live cell.
+     *
+     * Update all the cells so they will be aware of their neighbors.
      */
     public void nextGeneration() {
+
+//        nextStep = new ArrayList<ArrayList<Cell>>(currentStep);
         generationNum++;
 
-        for (int h = 0; h < grid.size(); h++) {
-            for (int w = 0; w < grid.get(h).size(); w++) {
-                Cell currentCell = getCellAt(h, w);
-
-                if (currentCell.isAlive()) {
-                    if (currentCell.getNumOfNeighbors() < 2 ||
-                            currentCell.getNumOfNeighbors() > 3) {
-                        currentCell.kill();
-                    }
-                } else {
-                    if (currentCell.getNumOfNeighbors() == 3) {
-                        currentCell.revive();
-                    }
-                }
+        for (int h = 0; h < currentStep.size(); h++) {
+            for (int w = 0; w < currentStep.get(h).size(); w++) {
+                getCellAt(h, w).advanceOnce();
+//                nextStep.get(h).get(w).setNumOfNeighbors(countNeighbors(h, w));
+//                nextStep.get(h).get(w).advanceOnce();
             }
         }
+//        currentStep = new ArrayList<ArrayList<Cell>>(nextStep);
     }
+
 
     /**
      * In order to follow the four rules of the Game of Life,
@@ -102,8 +105,8 @@ public class Field {
      * work is done on the map.
      */
     public void updateAllCells() {
-        for (int h = 0; h < grid.size(); h++) {
-            for (int w = 0; w < grid.get(h).size(); w++) {
+        for (int h = 0; h < currentStep.size(); h++) {
+            for (int w = 0; w < currentStep.get(h).size(); w++) {
                 getCellAt(h, w).setNumOfNeighbors(countNeighbors(h, w));
             }
         }
@@ -115,15 +118,16 @@ public class Field {
 
     public void clearGrid() {
         generationNum = 0;
-        for (int h = 0; h < grid.size(); h++) {
+        for (int h = 0; h < currentStep.size(); h++) {
             for (int w = 0; w < fieldWidth; w++) {
                 getCellAt(h, w).kill();
+
             }
         }
     }
 
     public Cell getCellAt(int h, int w) {
-        return grid.get(h).get(w);
+        return currentStep.get(h).get(w);
     }
 
     public boolean getCellStateAt(int h, int w) { return getCellAt(h, w).isAlive(); }
@@ -131,20 +135,20 @@ public class Field {
     public int getGenerationNum() { return generationNum; }
 
     /**
-     * Populates the grid with dead cells.
+     * Populates the currentStep with dead cells.
      */
     private void populateGrid() {
-        for (int h = 0; h < grid.size(); h++) {
+        for (int h = 0; h < currentStep.size(); h++) {
             for (int w = 0; w < fieldWidth; w++) {
-                grid.get(h).add(w, new Cell());
+                currentStep.get(h).add(w, new Cell());
             }
         }
     }
 
     /**
      * Counts the number of neighbors surrounding a cell.
-     * @param height - Y location on the grid.
-     * @param width - X location on the grid.
+     * @param height - Y location on the currentStep grid.
+     * @param width - X location on the currentStep grid.
      * @return 4 or less.
      */
     private int countNeighbors(int height, int width) {
@@ -155,13 +159,10 @@ public class Field {
                 if(i == 0 && j == 0) {
                     //do nothing.
                 } else {
-                    if ((height+i >= 0 && height + i < fieldHeight) &&
+                    if ((height + i >= 0 && height + i < fieldHeight) &&
                             (width + j >= 0 && width + j < fieldWidth)) {
                         if (getCellAt(height + i, width + j).isAlive()) {
                             neighborCount++;
-                            if (neighborCount > 3) {
-                                return neighborCount;
-                            }
                         }
                     }
                 }

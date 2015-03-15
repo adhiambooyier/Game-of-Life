@@ -1,15 +1,26 @@
-package GsGUI;
+package GameOfLife.GUI;
 
-import Model.Field;
-
-import javax.swing.*;
+import GameOfLife.Model.Field;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import javax.swing.*;
 
 /**
- * Created by gildekel on 1/27/15.
+ * Created by Gil Dekel on 1/27/15.
+ *
+ * This class organizes and draws the main JFrame.
+ * In here, all the buttons and features are organized
+ * including LevelView objects which will represent
+ * different "levels" in the future.
+ *
+ * It is also the main even listener to all user
+ * interactions.
+ *
+ * Author: Gil Dekel
+ * Last Modified: 3/15/2015
  */
+
 
 
 public class MainView implements Runnable {
@@ -24,17 +35,16 @@ public class MainView implements Runnable {
     private JFrame mainFrame;
     private JLabel generation;
     private JButton playButton, stopButton, clearButton, reloadButton;
+    private JToggleButton drawMode;
     private JCheckBox gridCheck;
     private Container frameContent, southPanel, eastPanel,
-                      centerPanel, mediaPanel, statusBar;
+            centerPanel, mediaPanel, statusBar;
     private LevelView levelView = new LevelView(new Field());
     private boolean stillRunning = false;
 
 
     public MainView() {
         mainFrame = new JFrame();
-        mainFrame.setLocationRelativeTo(null);
-//        mainFrame.setMinimumSize(levelView.getLevelSize());
         mainFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         mainFrame.setTitle(TITLE);
 
@@ -92,9 +102,18 @@ public class MainView implements Runnable {
             }
         });
 
+        drawMode = new JToggleButton("Draw", true);
+        drawMode.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                levelView.toggleDrawMode();
+            }
+        });
+
 
         //Building the frame
-        eastPanel.setLayout(new GridLayout(4, 2));
+        eastPanel.setLayout(new GridLayout(8, 2));
+        eastPanel.add(drawMode);
 
         //BoxLayout left to right: add the levelView, a border, and the eastPanel.
         //This is done to insure the fixed size of the elements.
@@ -123,15 +142,14 @@ public class MainView implements Runnable {
 
 
         mainFrame.pack();
+        mainFrame.setLocationRelativeTo(null);
         mainFrame.setResizable(false);
         mainFrame.setVisible(true);
+//        System.out.println(mainFrame.getSize());
 
     }
 
     public void run() {
-
-
-
         while(true) {
 
             if(stillRunning) {
@@ -148,9 +166,20 @@ public class MainView implements Runnable {
     }
 
     //Action methods.
-    public void playLevel() { stillRunning = true; }
+    public void playLevel() {
+        stillRunning = true;
+        if(drawMode.getModel().isSelected())    //Toggles the draw button on/off
+            drawMode.doClick();                 //when the play button is pressed.
+        drawMode.getModel().setEnabled(false);  //It is not possible to draw while the
+    }                                           //cells are active.
 
-    public void stopLevel() { stillRunning = false; }
+    public void stopLevel() {                   //Same as above, only the other way around.
+        stillRunning = false;
+        if(!drawMode.getModel().isEnabled()) {
+            drawMode.getModel().setEnabled(true);
+            drawMode.doClick();
+        }
+    }
 
     public void reloadLevel() {
         levelView.reloadLevel();
